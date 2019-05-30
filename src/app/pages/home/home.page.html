@@ -1,0 +1,34 @@
+<ion-header>
+    <ion-toolbar color="primary">
+        <ion-buttons slot="end">
+            <ion-button (click)="logout()">
+                <ion-icon slot="icon-only" name="log-out"></ion-icon>
+            </ion-button>
+        </ion-buttons>
+        <ion-title>GiroPrices</ion-title>
+    </ion-toolbar>
+</ion-header>
+<ion-content>
+    <ion-segment (ionChange)="getBtcPrices($event)">
+        <ion-segment-button value="buy" checked>
+            <ion-label>Buy Btc</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="sell">
+            <ion-label>Sell Btc</ion-label>
+        </ion-segment-button>
+    </ion-segment>
+    <ion-list class="ion-margin-top">
+        <ion-list-header class="ion-text-uppercase">
+            <ion-label class="ion-text-center">Prices List</ion-label>
+        </ion-list-header>
+        <ion-item (click)="redirectPage(price.id)" *ngFor="let price of prices">
+            <div class="ion-padding">
+                <ion-label class="ion-margin-bottom">{{price.currency}}</ion-label>
+                <p class="ion-margin-bottom">BTC detail: {{price.btc_price_detail}}</p>
+                <p class="ion-margin-bottom">BTC Wholesaler: {{price.btc_price_wholesaler}}</p>
+                <p class="ion-no-margin">Payment Method: {{price.payment_method}}</p>
+            </div>
+            <ion-icon name="arrow-dropright" slot="end"></ion-icon>
+        </ion-item>
+    </ion-list>
+</ion-content>
