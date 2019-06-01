@@ -3,26 +3,36 @@ import { apiGirosApp } from '../../environments/environment';
 import { map } from 'rxjs/operators';
 import { Router } from '@angular/router';
 
+import { ToastController, Platform } from '@ionic/angular';
+
 import { HttpClient } from '@angular/common/http';
 import { Storage } from '@ionic/storage';
-
+import { BehaviorSubject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ApiGirosappService {
 
-  private user:any;
 
+  authState = new BehaviorSubject(false);
 
-  constructor(private http: HttpClient, private storage: Storage, private router: Router) { }
+  constructor(private http: HttpClient, 
+              private storage: Storage, 
+              private router: Router,
+              private platform: Platform,
+              ) { 
+    this.platform.ready().then(() => {
+      this.ifLoggedIn();
+    });
+  }
 
-  userIsAuthenticated() {
-    this.user = this.storage.get("user").then((response) => {
-      console.log(response);
-      return response.token;
-    }).catch(err => console.log(err.message));
-    return this.user;
+  ifLoggedIn() {
+    this.storage.get('user').then((response) => {
+      if (response) {
+        this.authState.next(true);
+      }
+    });
   }
 
   login(username: string, password: string) {
@@ -33,7 +43,8 @@ export class ApiGirosappService {
 
       this.storage.set("user", {"token": data.token}).then(()=>{
       	this.router.navigate(["/tabs/home"]);
-      }).catch(err=>console.log(err.message));
+        this.authState.next(true);
+      });
 
     }, error => {
       console.log(error.error);
@@ -45,8 +56,8 @@ export class ApiGirosappService {
   	.then(()=>{
   		console.log("logout success!");
   		this.router.navigate(['/login']);
-  	})
-  	.catch((err)=>console.log(err.message));
+      this.authState.next(false);
+  	});
   }
 
   getBtcPrices(user, action) {
@@ -57,5 +68,9 @@ export class ApiGirosappService {
   getBtcPricesDetail(user, action, id) {
     return this.http.get<any>(`${apiGirosApp.url}btc-list/${action}/${id}`,
       {headers: { 'Authorization': "JWT "+ user}});
+  }
+
+  isAuthenticated() {
+    return this.authState.value;
   }
 }

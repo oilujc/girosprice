@@ -2,24 +2,20 @@ import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, RouterStateSnapshot, UrlTree, CanActivate, Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { Storage } from '@ionic/storage';
+import { ApiGirosappService } from '../services/api-girosapp.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class LoginGuard implements CanActivate {
-   public response: boolean;
    
-   constructor(private storage: Storage, private router: Router) { }
+   constructor(private apiService: ApiGirosappService, private router: Router) { }
 
    canActivate(){
-    this.storage.get("user").then((response) => {
-     if (response == null) {
-       this.router.navigate(['/login']);
-     }
-       this.response = true;
-     }).catch( err => {
-       console.log(err.message);
-     });
-  	return this.response;
+    let userAuthenticated = this.apiService.isAuthenticated();
+    if (userAuthenticated) {
+      return true;
+    }
+    this.router.navigate(['/login']);
   }
 }

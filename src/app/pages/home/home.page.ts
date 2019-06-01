@@ -12,12 +12,12 @@ import { Router } from '@angular/router';
 export class HomePage implements OnInit {
    public prices: BtcPrices[];
    private activeAction: string;
-   private user:any;
+
+
   constructor(private apiService: ApiGirosappService, private storage: Storage, private router: Router) { }
 
   ngOnInit() {
-    this.user = this.apiService.userIsAuthenticated();
-   console.log(this.user);
+
   }
 
   getBtcPrices(event) {
